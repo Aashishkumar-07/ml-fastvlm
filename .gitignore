@@ -139,3 +139,6 @@ dmypy.json
 
 # FastVLM models
 app/FastVLM/model
+
+# ignore adding fastVLM model
+checkpoints/
