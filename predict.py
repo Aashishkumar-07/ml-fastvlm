@@ -5,21 +5,32 @@
 import cv2
 import torch
 from PIL import Image
+from pathlib import Path
 from llava.utils import disable_torch_init
 from llava.conversation import conv_templates
 from llava.model.builder import load_pretrained_model
 from llava.mm_utils import tokenizer_image_token, process_images, get_model_name_from_path
 from llava.constants import IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
 
-model_path = "checkpoints/llava-fastvithd_1.5b_stage3"
+ROOT_DIR = Path(__file__).resolve().parent
+model_path = ROOT_DIR/"checkpoints/llava-fastvithd_1.5b_stage3"
+print(f"model_path : {model_path}")
 model, tokenizer, image_processor, input_ids = None, None, None, None
+
+def get_device():
+    if torch.cuda.is_available():
+        return torch.device("cuda:0")
+    if torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
 
 # Load model
 def load_model():
     global model, tokenizer, image_processor, input_ids
     disable_torch_init()
-    model_name = get_model_name_from_path(model_path)
-    tokenizer, model, image_processor, context_len = load_pretrained_model(model_path=model_path, model_base=None, model_name=model_name, device="cuda:0")
+    model_name = get_model_name_from_path(str(model_path))
+    device = get_device()
+    tokenizer, model, image_processor, context_len = load_pretrained_model(model_path=model_path, model_base=None, model_name=model_name, device=device)
 
     # Construct prompt
     qs = "Describe the scene."
@@ -36,7 +47,7 @@ def load_model():
     model.generation_config.pad_token_id = tokenizer.pad_token_id
 
     # Tokenize prompt
-    input_ids = tokenizer_image_token(prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors='pt').unsqueeze(0).to(torch.device("cuda:0"))
+    input_ids = tokenizer_image_token(prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors='pt').unsqueeze(0).to(torch.device(device))
 
 def generate_caption(cv_image):
     # if model is not loaded

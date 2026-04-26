@@ -26,6 +26,9 @@ dependencies = [
 train = ["deepspeed==0.13.1", "ninja", "wandb"]
 build = ["build", "twine"]
 
+[tool.setuptools]
+py-modules = ["predict"]
+
 [tool.setuptools.packages.find]
 exclude = ["assets*", "benchmark*", "docs", "dist*", "playground*", "scripts*", "tests*"]
 
