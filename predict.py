@@ -12,9 +12,6 @@ from llava.model.builder import load_pretrained_model
 from llava.mm_utils import tokenizer_image_token, process_images, get_model_name_from_path
 from llava.constants import IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
 
-ROOT_DIR = Path(__file__).resolve().parent
-model_path = ROOT_DIR/"checkpoints/llava-fastvithd_1.5b_stage3"
-print(f"model_path : {model_path}")
 model, tokenizer, image_processor, input_ids = None, None, None, None
 
 def get_device():
@@ -25,8 +22,13 @@ def get_device():
     return torch.device("cpu")
 
 # Load model
-def load_model():
+def load_model(model_path):
     global model, tokenizer, image_processor, input_ids
+
+    print(f"model_path : {model_path}")
+    if model_path is None:
+        raise ValueError("model_path cannot be None") 
+    
     disable_torch_init()
     model_name = get_model_name_from_path(str(model_path))
     device = get_device()
@@ -51,8 +53,8 @@ def load_model():
 
 def generate_caption(cv_image):
     # if model is not loaded
-    if model is None or tokenizer is None or image_processor is None or input_ids is None:
-        load_model()
+    # if model is None or tokenizer is None or image_processor is None or input_ids is None:
+    #     load_model()
 
     # Load and preprocess image
     image = Image.fromarray(cv_image)
@@ -74,5 +76,6 @@ def generate_caption(cv_image):
         return outputs
 
 if __name__=="__main__":
+    load_model("checkpoints/llava-fastvithd_1.5b_stage3")
     cv_image = cv2.imread('sample_images/car.jpg')
     print(generate_caption(cv_image=cv_image))

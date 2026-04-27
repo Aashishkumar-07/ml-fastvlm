@@ -29,6 +29,9 @@ build = ["build", "twine"]
 [tool.setuptools]
 py-modules = ["predict"]
 
+[tool.setuptools.package-data]
+llava = ["model/multimodal_encoder/mobileclip/configs/*.json"]
+
 [tool.setuptools.packages.find]
 exclude = ["assets*", "benchmark*", "docs", "dist*", "playground*", "scripts*", "tests*"]
 
