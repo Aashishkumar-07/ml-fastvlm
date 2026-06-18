@@ -51,13 +51,12 @@ def load_model(model_path):
     # Tokenize prompt
     input_ids = tokenizer_image_token(prompt, tokenizer, IMAGE_TOKEN_INDEX, return_tensors='pt').unsqueeze(0).to(torch.device(device))
 
-def generate_caption(cv_image):
+def generate_caption(image):
     # if model is not loaded
     # if model is None or tokenizer is None or image_processor is None or input_ids is None:
     #     load_model()
 
     # Load and preprocess image
-    image = Image.fromarray(cv_image)
     image_tensor = process_images([image], image_processor, model.config)[0]
     # Run inference
     with torch.inference_mode():
